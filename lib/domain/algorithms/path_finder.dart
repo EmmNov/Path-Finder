@@ -20,35 +20,37 @@ class PathFinder {
     List<Position> queue = [];
     queue.add(start);
 
-    Map<Position, Position?> from = {};
-    from[start] = null;
+    Map<Position, Position?> parentMap = {};
+    parentMap[start] = null;
 
     while (queue.isNotEmpty) {
       Position current = queue.removeAt(0);
 
       if (current == end) {
-        return _reconstructPath(from, end);
+        return _reconstructPath(parentMap, end);
       }
 
       for (Position dir in directions) {
-        Position nextPoint = Position(current.x + dir.x, current.y + dir.y);
+        Position nextPosition = Position(current.x + dir.x, current.y + dir.y);
 
-        if (grid.isWalkable(nextPoint) && !from.containsKey(nextPoint)) {
-          queue.add(nextPoint);
-          from[nextPoint] = current;
+        if (grid.isWalkable(nextPosition) &&
+            !parentMap.containsKey(nextPosition)) {
+          queue.add(nextPosition);
+          parentMap[nextPosition] = current;
         }
       }
     }
     return [];
   }
 
-  List<Position> _reconstructPath(Map<Position, Position?> from, Position end) {
+  List<Position> _reconstructPath(
+      Map<Position, Position?> parentMap, Position end) {
     List<Position> path = [];
     Position? current = end;
 
     while (current != null) {
       path.add(current);
-      current = from[current];
+      current = parentMap[current];
     }
     return path.reversed.toList();
   }
